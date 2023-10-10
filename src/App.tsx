@@ -1,26 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useEffect, useState} from 'react';
 import './App.css';
+import ChartComponent from "./components/ChartComponent";
+import generateData from "./helpers/generateData";
+import {DataItem} from "./types/types";
+import filterDataByLastMonth from "./helpers/filterDataByLastMonth";
+import filterDataByLastWeek from "./helpers/filterDataByLastWeek";
+import {Months} from "./const/const";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [data, setData] = useState<DataItem[]>([]);
+
+    useEffect(() => {
+        const newData = generateData(2000)
+        const lastMonthData =filterDataByLastMonth(newData)
+        const lastWeekData=filterDataByLastWeek(newData)
+        setData(newData)
+        console.log(Months)
+    }, [])
+
+    return (
+        <div className="App">
+            <ChartComponent dataTransactions={data}/>
+        </div>
+    );
 }
 
 export default App;
