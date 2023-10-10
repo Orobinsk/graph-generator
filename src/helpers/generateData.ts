@@ -1,6 +1,6 @@
 import {DataItem} from "../types/types";
 
-const types: DataItem['type'][] = ['expanses', 'revenue'];
+const types: DataItem['type'][] = ['expanses', 'revenue','income','debt'];
 
 function getRandomNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -17,7 +17,7 @@ function generateRandomData(): DataItem {
     const division = Math.random() < 0.5 ? 'B2B' : 'B2C';
     const date = getRandomDate('2023-01-01', '2023-12-31');
     const amount = getRandomNumber(1000, 30000);
-    const type = types[getRandomNumber(0, 1)];
+    const type = types[getRandomNumber(0, 3)];
 
     return {
         division,
