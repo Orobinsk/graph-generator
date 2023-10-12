@@ -1,7 +1,11 @@
 @import "reset";
 @import "variables/global";
 
-
+@font-face {
+  font-family: "proximanova";
+  src:
+          url("../fonts/proximanova_regular.ttf")
+}
 body {
   font: var(--font-l);
 }

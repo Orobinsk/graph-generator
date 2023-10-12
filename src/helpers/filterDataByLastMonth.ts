@@ -1,7 +1,7 @@
-import {DataItem} from "../types/types";
+import {IDataItem} from "../types/types";
 
 
-function filterDataByLastMonth(data: DataItem[]): DataItem[] {
+function filterDataByLastMonth(data: IDataItem[]): IDataItem[] {
     const currentDate = new Date();
     const lastMonth = new Date(currentDate);
     lastMonth.setMonth(currentDate.getMonth() - 1);

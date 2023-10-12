@@ -1,18 +1,24 @@
-import React, {FC} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {
-    Chart as ChartJS,
     CategoryScale,
+    Chart as ChartJS,
+    Legend,
     LinearScale,
-    PointElement,
     LineElement,
+    PointElement,
     Title,
     Tooltip,
-    Legend, ChartData,
 } from 'chart.js';
 import {Line} from 'react-chartjs-2';
-import {DataItem} from "../../types/types";
-import filterAndSumByMonth from "../filterAndSumByMonth";
 import cls from './ChartComponent.module.scss'
+
+import classNames from "classnames";
+import {chartOptions, chartSetting} from "../../config/chartSetting";
+
+import filterAndSumByMonth from "../filterAndSumByMonth";
+import {chartNavBtn} from "../../const/const";
+import {IChartDataItem, IDataItem} from "../../types/types";
+import {allAmountByType} from "../../helpers/allAmountByType";
 
 ChartJS.register(
     CategoryScale,
@@ -25,97 +31,79 @@ ChartJS.register(
 );
 
 interface ChartComponentProps {
-    dataTransactions: DataItem[]
+    data: IDataItem[]
 }
 
-
 const ChartComponent: FC<ChartComponentProps> = (props) => {
-    const {dataTransactions} = props
+    const {data} = props
+    const [selectedButton, setSelectedButton] = useState(2);
+    const [dataChart, setDataChart] = useState<IChartDataItem>({
+        expenses: [],
+        revenue: [],
+        income: [],
+        debt: [],
+        all:[]
+    });
 
-    const expansesTransactions = dataTransactions.filter((data) => data.type === "expanses")
-    const revenueTransactions = dataTransactions.filter((data) => data.type === "revenue")
-    const incomeTransactions = dataTransactions.filter((data) => data.type === "income")
-    const debtTransactions = dataTransactions.filter((data) => data.type === "debt")
+    useEffect(() => {
+        const filteredTransitionByMonth = filterAndSumByMonth(data);
 
 
-    const expansesTransactionsByMonth = filterAndSumByMonth(expansesTransactions)
-    const revenueTransactionsByMonth = filterAndSumByMonth(revenueTransactions)
+        setDataChart(filteredTransitionByMonth)
+    }, [data])
 
-    // console.log(dataTransactions, expansesTransactions, revenueTransactions)
-    const options = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top' as const,
-            },
-            title: {
-                display: true,
-                text: 'Chart.js Line Chart',
-            },
-        },
+    const handleButtonClick = (buttonIndex: number) => {
+        setSelectedButton(buttonIndex);
     };
+console.log(dataChart)
+    const datasets = chartSetting(dataChart)
+    const totalAmount = allAmountByType(data)
 
-    // const labels = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
-    // const months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]
-
-
-    // const data = {
-    //     labels,
-    //     datasets: [
-    //         {
-    //             label: 'Выручка',
-    //             data: expansesTransactionsByMonth.map((transfer)=> Number(transfer.totalAmount)),
-    //             borderColor: 'rgb(255, 99, 132)',
-    //             backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    //             tension: 0.5
-    //         },
-    //         {
-    //             label: 'Затраты',
-    //             data: [15, 25, 10,12,15,15, 25, 10,12,15,15, 25, 10,12,15],
-    //             borderColor: 'rgb(53, 162, 235)',
-    //             backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    //         },
-    //     ],
-    // };
-
-    const datasets: ChartData<'line', { month: string, totalAmount: number } []> = {
-        datasets: [{
-            label: 'Затраты',
-            data: expansesTransactionsByMonth.map((transfer) => transfer),
-            borderColor: '#30C7DC',
-            backgroundColor: '#30C7DC',
-            tension: 0.5,
-            parsing: {
-                xAxisKey: 'month',
-                yAxisKey: 'totalAmount'
-            }
-        }, {
-            label: 'Выручка',
-            data: revenueTransactionsByMonth.map((transfer) => transfer),
-            borderColor: '#73CF7A',
-            backgroundColor: '#73CF7A',
-            tension: 0.5,
-            parsing: {
-                xAxisKey: 'month',
-                yAxisKey: 'totalAmount'
-            }
+    const labels = [
+        {circle: cls.circle1, labelName: 'Выручка', count: `₽ ${totalAmount.revenue}`},
+        {circle: cls.circle2, labelName: 'Затраты', count: `₽ ${totalAmount.expenses}`},
+        {circle: cls.circle3, labelName: 'Прибыль', count: `₽ ${totalAmount.income}`},
+        {circle: cls.circle4, labelName: 'Задолженность', count: `₽ ${totalAmount.debt}`},
+        {
+            circle: cls.circle5,
+            labelName: 'Итог',
+            count: `₽ ${totalAmount.revenue - totalAmount.expenses + totalAmount.income - totalAmount.debt}`
         },
-        ],
-    };
+    ]
 
-    // {
-    //     "month": "Январь",
-    //     "totalAmount": 114820
-    // },
     return (
         <div className={cls.container}>
-            <h3></h3>
+            <div className={cls.header}>
+                <h3 className={cls.title}>Общая статистика</h3>
+                <div className={cls.chartNav}>
+                    {chartNavBtn.map((item, index) => (
+                        <button
+                            key={index}
+                            className={classNames(cls.navBtn, {
+                                [cls.selectedBtn]: selectedButton === index,
+                            })}
+                            onClick={() => handleButtonClick(index)}
+                        >
+                            {item.name}
+                        </button>
+                    ))}
+                </div>
+            </div>
             <div className={cls.chart}>
-                <Line options={options} data={datasets}/>
-                {/*<pre>{JSON.stringify({expansesTransactionsByMonth}, null, 2)}</pre>*/}
+                <Line options={chartOptions} data={datasets} width={1056} height={254}/>
+            </div>
+            <div className={cls.labels}>
+                {labels.map((item, index) => (
+                    <div key={index} className={cls.labelContainer}>
+                        <div className={classNames(cls.circle, item.circle)}></div>
+                        <div className={cls.label}>
+                            <p className={cls.labelName}>{item.labelName}</p>
+                            <p className={cls.count}>{item.count}</p>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
-
     );
 };
 

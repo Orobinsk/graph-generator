@@ -1,4 +1,98 @@
-.chart{
-  width: 782px;
-  height: 254px;
+.container{
+  width: 869px;
+  height: 426px;
+  padding:18px 32px 32px;
+  border-radius: 32px;
+  margin-top: 32px ;
+  background-color: white;
 }
+
+.header{
+  display: flex;
+  justify-content: space-between;
+}
+.title{
+  font: var(--font-xl);
+  font-size: 20px;
+  color: var(--primary-text);
+}
+.chart{
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.chartNav{
+  display: flex;
+  justify-content: space-between;
+  width: 182px;
+  height: 37px;
+}
+.navBtn{
+  border: none;
+  background:none;
+  color: var(--light-text);
+  font: var(--font-m);
+  transition: all 0.3s ease-in;
+}
+.selectedBtn{
+  border-bottom: 4px solid #54D3C2;
+  color: var(--primary-text);
+}
+
+.labels{
+  display: flex;
+  align-items: center;
+justify-content: space-between;
+  margin-top: 20px;
+}
+.labelContainer{
+  height: 38px;
+  display: flex;
+  align-items: center;
+  margin-right: 16px;
+}
+
+.label{
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  margin-left: 9px;
+}
+.labelName{
+  font: var(--font-s);
+  color: var(--secondary-text);
+
+}
+.count{
+  font: var(--font-m);
+  color: var(--primary-text);
+}
+
+.circle{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--inverted-text);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+.circle1{
+  background: #73CF7A;
+}
+.circle2{
+  background: #30C7DC;;
+}
+.circle3{
+  background:#45AAF2;
+}
+
+.circle4{
+  background: #F5E230;
+}
+
+.circle5{
+  background: #AC74FC;
+}
+
