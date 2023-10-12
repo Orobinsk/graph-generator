@@ -1,5 +1,5 @@
-import {monthNames} from "../const/const";
-import {IChartDataItem, IDataItem} from "../types/types";
+import {monthNames} from "../../../const/const";
+import {IChartDataItem, IDataItem} from "../../../types/types";
 
 
 const filterAndSum = (yearData: IDataItem[], type: string) => {
@@ -23,9 +23,7 @@ const filterAndSum = (yearData: IDataItem[], type: string) => {
     }));
 
 };
-// const sortArray = (array: any[]) => {
-//     return array.sort((a, b) => a.key.localeCompare(b.key, 'ru'));
-// };
+
 
 const filterAndSumByMonth = (yearData: IDataItem[]) => {
     const types = ["expenses", "revenue", "income", "debt"];
@@ -39,7 +37,6 @@ const filterAndSumByMonth = (yearData: IDataItem[]) => {
 
     types.forEach((type) => {
         data[type] = filterAndSum(yearData, type);
-        // data[type] = sortArray(data[type]);
     });
 
     const monthSums: { [key: string]: number } = {};
@@ -63,7 +60,6 @@ const filterAndSumByMonth = (yearData: IDataItem[]) => {
         key: month,
         totalAmount: monthSums[month]
     }));
-    // data.all = sortArray(data.all)
 
 
     return data;

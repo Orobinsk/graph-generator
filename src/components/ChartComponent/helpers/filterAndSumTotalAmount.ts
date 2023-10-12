@@ -1,7 +1,10 @@
-import {IDataItem} from "../types/types";
+import {IDataItem} from "../../../types/types";
 
-export function filterAndSumTotalAmount(data: IDataItem[], divisionFilter: string): number {
-    const filteredData = data.filter((item) => item.division === divisionFilter);
+export function filterAndSumTotalAmount(data: IDataItem[], divisionFilter?: string): number {
+    let filteredData = data
+    if (divisionFilter) {
+        filteredData = filteredData.filter((item) => item.division === divisionFilter);
+    }
 
     return filteredData.reduce((total, item) => {
         const amount = parseFloat(item.amount);

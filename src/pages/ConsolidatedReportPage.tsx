@@ -3,7 +3,6 @@ import cls from './ConsolidatedReportPage.module.scss'
 import ChartComponent from "../components/ChartComponent/ChartComponent";
 import generateData from "../helpers/generateData";
 import DivisionsButtons from "../components/DivisionsButtons/DivisionsButtons";
-import {filterAndSumTotalAmount} from "../helpers/filterAndSumTotalAmount";
 import {IDataItem} from "../types/types";
 
 
@@ -11,21 +10,15 @@ const ConsolidatedReportPage: FC = () => {
     const [data, setData] = useState<IDataItem[]>([])
 
     useEffect(() => {
-        const yearData = generateData(400)
-
+        const yearData = generateData(10000)
         setData(yearData)
-
-        const divisionFilter = "B2B";
-        const totalAmount = filterAndSumTotalAmount(yearData, divisionFilter);
-
-        // console.log(`Сумма для ${divisionFilter}: ${totalAmount}`);
     }, [])
 
 
     return (
         <div className={cls.layoutPage}>
             <h1 className={cls.title}>Сводный отчет</h1>
-            <DivisionsButtons/>
+            <DivisionsButtons data={data}/>
             <ChartComponent data={data}/>
         </div>
     );

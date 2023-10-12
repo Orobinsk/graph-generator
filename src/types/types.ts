@@ -9,5 +9,7 @@ export interface IChartDataItem {
     [key: string]: { key: string; totalAmount: number }[];
 }
 
-
+export interface IData{
+   data: IDataItem[]
+}
 

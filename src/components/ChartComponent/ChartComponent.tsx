@@ -15,10 +15,13 @@ import cls from './ChartComponent.module.scss'
 import classNames from "classnames";
 import {chartOptions, chartSetting} from "../../config/chartSetting";
 
-import filterAndSumByMonth from "../filterAndSumByMonth";
+import filterAndSumByMonth from "./helpers/filterAndSumByMonth";
 import {chartNavBtn} from "../../const/const";
-import {IChartDataItem, IDataItem} from "../../types/types";
-import {allAmountByType} from "../../helpers/allAmountByType";
+import {IChartDataItem, IData, IDataItem} from "../../types/types";
+import {allAmountByType, IAllAmountByType} from "./helpers/allAmountByType";
+import filterAndSumByDay from "./helpers/filterAndSumByDay";
+import filterDataByLastMonth from "./helpers/filterDataByLastMonth";
+import filterDataByLastWeek from "./helpers/filterDataByLastWeek";
 
 ChartJS.register(
     CategoryScale,
@@ -30,34 +33,53 @@ ChartJS.register(
     Legend
 );
 
-interface ChartComponentProps {
-    data: IDataItem[]
-}
 
-const ChartComponent: FC<ChartComponentProps> = (props) => {
+const ChartComponent: FC<IData> = (props) => {
     const {data} = props
-    const [selectedButton, setSelectedButton] = useState(2);
+    const [selectedButton, setSelectedButton] = useState('Год');
+
     const [dataChart, setDataChart] = useState<IChartDataItem>({
         expenses: [],
         revenue: [],
         income: [],
         debt: [],
-        all:[]
+        all: []
     });
+    const [totalAmount, setTotalAmount] = useState<IAllAmountByType>({
+        expenses: 0,
+        revenue: 0,
+        income: 0,
+        debt: 0,
+    })
+
+    // const totalAmount = allAmountByType(data)
 
     useEffect(() => {
         const filteredTransitionByMonth = filterAndSumByMonth(data);
-
-
         setDataChart(filteredTransitionByMonth)
+        setTotalAmount(allAmountByType(data))
     }, [data])
 
-    const handleButtonClick = (buttonIndex: number) => {
-        setSelectedButton(buttonIndex);
-    };
-console.log(dataChart)
+    function handleButtonClick(name: string) {
+        setSelectedButton(name);
+        if (name === 'Год') {
+            const filteredTransitionByMonth = filterAndSumByMonth(data);
+            setDataChart(filteredTransitionByMonth)
+            setTotalAmount(allAmountByType(data))
+        } else if (name === 'Месяц') {
+            const filteredTransitionByDay = filterDataByLastMonth(data)
+            const chartDataByMoth = filterAndSumByDay(filteredTransitionByDay)
+            setDataChart(chartDataByMoth)
+            setTotalAmount(allAmountByType(filteredTransitionByDay))
+        } else {
+            const filteredTransitionByDay = filterDataByLastWeek(data)
+            const chartDataByMoth = filterAndSumByDay(filteredTransitionByDay)
+            setDataChart(chartDataByMoth)
+            setTotalAmount(allAmountByType(filteredTransitionByDay))
+        }
+    }
+
     const datasets = chartSetting(dataChart)
-    const totalAmount = allAmountByType(data)
 
     const labels = [
         {circle: cls.circle1, labelName: 'Выручка', count: `₽ ${totalAmount.revenue}`},
@@ -80,9 +102,9 @@ console.log(dataChart)
                         <button
                             key={index}
                             className={classNames(cls.navBtn, {
-                                [cls.selectedBtn]: selectedButton === index,
+                                [cls.selectedBtn]: selectedButton === item.name,
                             })}
-                            onClick={() => handleButtonClick(index)}
+                            onClick={() => handleButtonClick(item.name)}
                         >
                             {item.name}
                         </button>

@@ -1,4 +1,4 @@
-import {IDataItem} from "../types/types";
+import {IDataItem} from "../../../types/types";
 
 
 function filterDataByLastMonth(data: IDataItem[]): IDataItem[] {

@@ -1,6 +1,6 @@
-import { IDataItem } from "../types/types";
+import { IDataItem } from "../../../types/types";
 
-interface IAllAmountByType {
+export interface IAllAmountByType {
     expenses: number,
     revenue: number,
     income: number,

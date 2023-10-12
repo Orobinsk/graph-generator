@@ -14,7 +14,38 @@
   cursor: pointer;
   transition: all 0.3s ease;
 }
+.btnAmount{
+
+  font: var(--font-xl);
+  font-size: 28px;
+  margin-top: 13px;
+}
+.btnName{
+  font: var(--font-m);
+}
+.btnPercentWrap{
+  display: flex;
+  align-items: center;
+  margin: auto;
+  width: 144px;
+  height: 36px;
+  border-radius: 24px;
+  background: rgba(84, 211, 194, 0.25);
+}
+.btnPercentWrapSelected{
+  background: rgba(248, 248, 248, 0.25);
+}
+.btnPercentWrapRed{
+  background: rgba(252, 92, 101, 0.15);
+}
+.btnPercent{
+  margin: auto;
+}
+.btnPercentRed{
+  color: #FC5C65;
+}
 
 .selected {
+  color: #FFF;
   background:#54D3C2;
 }

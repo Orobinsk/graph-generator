@@ -1,51 +1,59 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useMemo, useState} from 'react';
 import cls from './DivisionsButtons.module.scss'
 import classNames from "classnames";
-import calendarIcon from "../../assets/navIcons/calendar.svg";
-import todoIcon from "../../assets/navIcons/todo.svg";
-import boxIcon from "../../assets/navIcons/box.svg";
-import peopleIcon from "../../assets/navIcons/people.svg";
-import countIcon from "../../assets/navIcons/count.svg";
-import chartIcon from "../../assets/navIcons/chart.svg";
-import settingIcon from "../../assets/navIcons/setting.svg";
+import {filterAndSumTotalAmount} from "../ChartComponent/helpers/filterAndSumTotalAmount";
+import {IData} from "../../types/types";
 
-const DivisionsButtons: FC = () => {
-    const [selectedButton, setSelectedButton] = useState(1);
 
-    const handleButtonClick = (buttonIndex: number) => {
-        setSelectedButton(buttonIndex);
+const DivisionsButtons: FC<IData> = ({data}) => {
+    const [selectedButton, setSelectedButton] = useState('Итоги');
+
+    const navButtons = useMemo(() => {
+        const buttons = [
+            {name: 'Итоги', amount: filterAndSumTotalAmount(data)},
+            {name: 'B2B', amount: filterAndSumTotalAmount(data, 'B2B')},
+            {name: 'B2C', amount: filterAndSumTotalAmount(data, 'B2C')},
+        ];
+        return buttons.map(button => ({
+            ...button,
+            percent: getRandomPercentage(),
+        }));
+    }, [data]);
+
+    const handleButtonClick = (name: string) => {
+
+        setSelectedButton(name);
     };
-    const Buttons = [
-        {icon: calendarIcon, index: 1, alt: 'calendar'},
-        {icon: todoIcon, index: 2, alt: 'todo'},
-        {icon: boxIcon, index: 3, alt: 'box'},
-    ];
+
+    function getRandomPercentage(): number {
+        return Math.round(Math.random() * 200 - 100);
+    }
+
+
     return (
         <div className={cls.wrapper}>
-            <button
-                className={classNames(cls.btn, {
-                    [cls.selected]: selectedButton === 1,
-                })}
-                onClick={() => handleButtonClick(1)}
-            >
-                Button 1
-            </button>
-            <button
-                className={classNames(cls.btn, {
-                    [cls.selected]: selectedButton === 2,
-                })}
-                onClick={() => handleButtonClick(2)}
-            >
-                Button 2
-            </button>
-            <button
-                className={classNames(cls.btn, {
-                    [cls.selected]: selectedButton === 3,
-                })}
-                onClick={() => handleButtonClick(3)}
-            >
-                Button 3
-            </button>
+            {navButtons.map((btn) =>
+                <button
+                    key={btn.name}
+                    className={classNames(cls.btn, {
+                        [cls.selected]: selectedButton === btn.name,
+                    })}
+                    onClick={() => handleButtonClick(btn.name)}
+                >
+                    <div className={classNames(cls.btnPercentWrap, {
+                        [cls.btnPercentWrapSelected]: selectedButton === btn.name,
+                    }, {
+                        [cls.btnPercentWrapRed]: btn.percent <= 0,
+                    })}
+                    >
+                        <p className={classNames(cls.btnPercent, {
+                            [cls.btnPercentRed]: btn.percent <= 0 && selectedButton !== btn.name
+                        })}>{btn.percent} %</p>
+                    </div>
+                    <p className={cls.btnAmount}>₽ {btn.amount}</p>
+                    <p className={cls.btnName}>{btn.name}</p>
+                </button>
+            )}
         </div>
     );
 };
