@@ -10,6 +10,6 @@ export interface IChartDataItem {
 }
 
 export interface IData{
-   data: IDataItem[]
+    data: IDataItem[];
 }
 

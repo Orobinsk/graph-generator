@@ -7,19 +7,18 @@ import {IDataItem} from "../types/types";
 
 
 const ConsolidatedReportPage: FC = () => {
+    const [yearData]=useState<IDataItem[]>(generateData(400))
     const [data, setData] = useState<IDataItem[]>([])
 
     useEffect(() => {
-        const yearData = generateData(10000)
         setData(yearData)
     }, [])
-
 
     return (
         <div className={cls.layoutPage}>
             <h1 className={cls.title}>Сводный отчет</h1>
-            <DivisionsButtons data={data}/>
-            <ChartComponent data={data}/>
+            <DivisionsButtons data={yearData} setData={setData}/>
+            <ChartComponent data={data} />
         </div>
     );
 };

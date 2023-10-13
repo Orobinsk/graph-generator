@@ -13,15 +13,18 @@ import {Line} from 'react-chartjs-2';
 import cls from './ChartComponent.module.scss'
 
 import classNames from "classnames";
-import {chartOptions, chartSetting} from "../../config/chartSetting";
+import {chartOptionsYear, chartSettingYear} from "../../config/chartSettingYear";
 
 import filterAndSumByMonth from "./helpers/filterAndSumByMonth";
 import {chartNavBtn} from "../../const/const";
-import {IChartDataItem, IData, IDataItem} from "../../types/types";
+import {IChartDataItem, IData} from "../../types/types";
 import {allAmountByType, IAllAmountByType} from "./helpers/allAmountByType";
 import filterAndSumByDay from "./helpers/filterAndSumByDay";
 import filterDataByLastMonth from "./helpers/filterDataByLastMonth";
 import filterDataByLastWeek from "./helpers/filterDataByLastWeek";
+import {chartOptionsMonth, chartSetting} from "../../config/charSettingMonth";
+import {chartOptionsWeek} from "../../config/charSettingWeek";
+
 
 ChartJS.register(
     CategoryScale,
@@ -34,10 +37,8 @@ ChartJS.register(
 );
 
 
-const ChartComponent: FC<IData> = (props) => {
-    const {data} = props
+const ChartComponent: FC<IData> = ({data}) => {
     const [selectedButton, setSelectedButton] = useState('Год');
-
     const [dataChart, setDataChart] = useState<IChartDataItem>({
         expenses: [],
         revenue: [],
@@ -52,12 +53,17 @@ const ChartComponent: FC<IData> = (props) => {
         debt: 0,
     })
 
-    // const totalAmount = allAmountByType(data)
 
     useEffect(() => {
         const filteredTransitionByMonth = filterAndSumByMonth(data);
         setDataChart(filteredTransitionByMonth)
         setTotalAmount(allAmountByType(data))
+        if(selectedButton==='Неделя'){
+            handleButtonClick('Неделя')
+        } else if(selectedButton==='Месяц'){
+            handleButtonClick('Месяц')
+        }
+
     }, [data])
 
     function handleButtonClick(name: string) {
@@ -79,6 +85,7 @@ const ChartComponent: FC<IData> = (props) => {
         }
     }
 
+    const datasetsYear = chartSettingYear(dataChart)
     const datasets = chartSetting(dataChart)
 
     const labels = [
@@ -112,7 +119,13 @@ const ChartComponent: FC<IData> = (props) => {
                 </div>
             </div>
             <div className={cls.chart}>
-                <Line options={chartOptions} data={datasets} width={1056} height={254}/>
+                {selectedButton === 'Год' ? (
+                    <Line options={chartOptionsYear} data={datasetsYear} width={1056} height={254} />
+                ) : selectedButton === 'Месяц' ? (
+                    <Line options={chartOptionsMonth} data={datasets} width={1056} height={254} />
+                ) : (
+                    <Line options={chartOptionsWeek} data={datasets} width={1056} height={254} />
+                )}
             </div>
             <div className={cls.labels}>
                 {labels.map((item, index) => (

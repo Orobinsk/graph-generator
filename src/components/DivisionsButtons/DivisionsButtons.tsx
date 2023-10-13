@@ -1,28 +1,46 @@
-import React, {FC, useMemo, useState} from 'react';
+import React, {Dispatch, FC, SetStateAction, useEffect, useState} from 'react';
 import cls from './DivisionsButtons.module.scss'
 import classNames from "classnames";
 import {filterAndSumTotalAmount} from "../ChartComponent/helpers/filterAndSumTotalAmount";
-import {IData} from "../../types/types";
+import {IData, IDataItem} from "../../types/types";
 
+type NavigationButton = {
+    name: string;
+    amount: number;
+    percent: number;
+};
 
-const DivisionsButtons: FC<IData> = ({data}) => {
+interface DivisionsButtonsProps extends IData{
+    setData: Dispatch<SetStateAction<IDataItem[]>>
+}
+
+const DivisionsButtons: FC<DivisionsButtonsProps> = ({data,setData}) => {
     const [selectedButton, setSelectedButton] = useState('Итоги');
+    const [navButtons, setNavButtons] = useState<NavigationButton[]>([]);
 
-    const navButtons = useMemo(() => {
+
+    useEffect(() => {
         const buttons = [
-            {name: 'Итоги', amount: filterAndSumTotalAmount(data)},
-            {name: 'B2B', amount: filterAndSumTotalAmount(data, 'B2B')},
-            {name: 'B2C', amount: filterAndSumTotalAmount(data, 'B2C')},
+            { name: 'Итоги', amount: filterAndSumTotalAmount(data) },
+            { name: 'B2B', amount: filterAndSumTotalAmount(data, 'B2B') },
+            { name: 'B2C', amount: filterAndSumTotalAmount(data, 'B2C') },
         ];
-        return buttons.map(button => ({
+        const buttonsWithPercentages = buttons.map(button => ({
             ...button,
             percent: getRandomPercentage(),
         }));
-    }, [data]);
+        setNavButtons(buttonsWithPercentages);
+    }, []);
 
     const handleButtonClick = (name: string) => {
-
         setSelectedButton(name);
+        if(name==='B2B'){
+            setData(data.filter((item) => item.division === 'B2B'))
+        } else if(name==='B2C'){
+            setData(data.filter((item) => item.division === 'B2C'))
+        } else {
+            setData(data)
+        }
     };
 
     function getRandomPercentage(): number {
